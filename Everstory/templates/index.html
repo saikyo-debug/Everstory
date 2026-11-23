@@ -1,0 +1,193 @@
+{% extends "base_public.html" %}
+{% from "_macros.html" import brand with context %}
+
+{% block title %}{{ app_name }} | My Personal AI Diary{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <header class="navbar">
+        {{ brand() }}
+
+        <nav class="nav-links">
+            <a href="#about">About</a>
+            <a href="#features">Features</a>
+        </nav>
+
+        <div class="nav-actions">
+            {% if signed_in_user %}
+                <a href="{{ url_for('dashboard') }}" class="nav-button">
+                    Open my diary
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="secondary-button">
+                    Log In
+                </a>
+
+                <a href="{{ url_for('register') }}" class="nav-button">
+                    Create Account
+                </a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+
+            <div class="hero-content">
+                <span class="eyebrow">
+                    YOUR PERSONAL SPACE, YOUR MEMORIES
+                </span>
+
+                <h1>
+                    Every memory<br>
+                    deserves to be <span>remembered.</span>
+                </h1>
+
+                <p class="hero-description">
+                    A personal diary that keeps your stories,
+                    organizes your memories, and helps you
+                    preserve what matters most.
+                </p>
+
+                <div class="hero-actions">
+                    {% if signed_in_user %}
+                        <a href="{{ url_for('new_entry') }}" class="primary-button">
+                            Write a Memory
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('register') }}" class="primary-button">
+                            Create Your Account
+                        </a>
+                    {% endif %}
+
+                    <a href="#about" class="secondary-button">
+                        Learn more
+                    </a>
+                </div>
+
+                <div class="hero-note">
+                    <span class="status-dot"></span>
+                    Your memories, your space, your control.
+                </div>
+            </div>
+
+            <div class="memory-card">
+                <div class="card-top">
+                    <span class="card-label">A LITTLE REMINDER</span>
+                    <span class="heart">♡</span>
+                </div>
+
+                <div class="memory-illustration">
+                    <div class="sun"></div>
+                    <div class="mountain mountain-back"></div>
+                    <div class="mountain mountain-front"></div>
+                </div>
+
+                <div class="memory-content">
+                    <span class="memory-date">A THOUGHT TO KEEP</span>
+                    <h2>Some moments are too precious to forget.</h2>
+                    <p>
+                        Your story is made of little moments.
+                        Give each one a place to stay.
+                    </p>
+                </div>
+
+                <div class="card-footer">
+                    <span>Made for your memories</span>
+                    <span>✦</span>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="features-section" id="features">
+
+            <div class="section-heading">
+                <span class="eyebrow">A SPACE THAT IS YOURS</span>
+                <h2>More than just a diary.</h2>
+                <p>
+                    Everything you need to keep your personal
+                    memories organized and protected.
+                </p>
+            </div>
+
+            <div class="feature-grid">
+
+                <article class="feature-card">
+                    <div class="feature-icon">✎</div>
+                    <h3>Your Personal Diary</h3>
+                    <p>
+                        Write about your experiences, thoughts,
+                        milestones, and everyday memories.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">♫</div>
+                    <h3>Voice and Video Memories</h3>
+                    <p>
+                        Preserve your stories through voice notes,
+                        photos, and video attachments.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">☁</div>
+                    <h3>Online and Offline</h3>
+                    <p>
+                        Keep using your diary without internet
+                        and synchronize your saved entries later.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">✧</div>
+                    <h3>Personal AI Assistant</h3>
+                    <p>
+                        Search memories, find related words,
+                        and get help using your diary.
+                    </p>
+                </article>
+
+                <article class="feature-card">
+                    <div class="feature-icon">⧗</div>
+                    <h3>Digital Time Capsule</h3>
+                    <p>
+                        Seal a message for your future self and
+                        open it on the day you choose.
+                    </p>
+                </article>
+
+            </div>
+        </section>
+
+        <section class="about-section" id="about">
+            <div>
+                <span class="eyebrow">
+                    YOUR MEMORIES. YOUR STORIES. YOUR LEGACY.
+                </span>
+                <h2>Because your story matters.</h2>
+            </div>
+
+            <p>
+                {{ app_name }} is designed to help you preserve your
+                experiences while keeping control over your
+                personal memories and the people you choose
+                to share them with.
+            </p>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        {{ brand() }}
+
+        <p>Your memories. Your stories. Your legacy.</p>
+        <span>© 2026 {{ app_name }}. All rights reserved.</span>
+    </footer>
+
+{% endblock %}

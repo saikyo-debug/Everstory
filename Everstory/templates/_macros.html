@@ -1,0 +1,83 @@
+{# Small pieces reused across pages. Import with:  {% from "_macros.html" import ... with context %} #}
+
+{% macro brand(link=None) %}
+<a href="{{ link or url_for('home') }}" class="brand">
+    <span class="brand-icon">{{ app_name[0]|upper }}</span>
+    <span>{{ app_name|lower }}<span class="brand-dot">.</span></span>
+</a>
+{% endmacro %}
+
+
+{% macro csrf_field() %}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% endmacro %}
+
+
+{# One place that shows flash messages, so none are ever lost or shown late. #}
+{% macro flashes() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-stack" role="status" aria-live="polite">
+        {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+{% endmacro %}
+
+
+{# Small icons showing which attachments a memory has. #}
+{% macro media_badges(summary) %}
+{% if summary %}
+<span class="media-badges">
+    {% if summary.get('photo') %}<span class="media-badge" title="Photos">🖼 {{ summary.photo }}</span>{% endif %}
+    {% if summary.get('audio') %}<span class="media-badge" title="Voice notes">🎙 {{ summary.audio }}</span>{% endif %}
+    {% if summary.get('video') %}<span class="media-badge" title="Videos">🎬 {{ summary.video }}</span>{% endif %}
+</span>
+{% endif %}
+{% endmacro %}
+
+
+{# Heart button that marks a memory as a favorite. #}
+{% macro favorite_button(entry, next_url) %}
+<form method="POST"
+      action="{{ url_for('toggle_favorite', entry_id=entry['id']) }}"
+      class="inline-form">
+    {{ csrf_field() }}
+    <input type="hidden" name="next" value="{{ next_url }}">
+    <button type="submit"
+            class="heart-button{% if entry['is_favorite'] %} is-favorite{% endif %}"
+            aria-pressed="{{ 'true' if entry['is_favorite'] else 'false' }}"
+            aria-label="{{ 'Remove from favorites' if entry['is_favorite'] else 'Add to favorites' }}"
+            title="{{ 'Remove from favorites' if entry['is_favorite'] else 'Add to favorites' }}">
+        {{ '♥' if entry['is_favorite'] else '♡' }}
+    </button>
+</form>
+{% endmacro %}
+
+
+{# Photos, voice notes and videos belonging to a memory or capsule. #}
+{% macro media_gallery(media) %}
+{% if media %}
+<div class="media-gallery">
+    {% for item in media %}
+    <figure class="media-item media-{{ item['kind'] }}">
+        {% if item['kind'] == 'photo' %}
+            <a href="{{ url_for('media.serve_media', media_id=item['id']) }}" target="_blank" rel="noopener">
+                <img src="{{ url_for('media.serve_media', media_id=item['id']) }}"
+                     alt="{{ item['original_name'] }}" loading="lazy">
+            </a>
+        {% elif item['kind'] == 'audio' %}
+            <audio controls preload="none"
+                   src="{{ url_for('media.serve_media', media_id=item['id']) }}"></audio>
+        {% else %}
+            <video controls preload="metadata" playsinline
+                   src="{{ url_for('media.serve_media', media_id=item['id']) }}"></video>
+        {% endif %}
+        <figcaption>{{ item['original_name'] }}</figcaption>
+    </figure>
+    {% endfor %}
+</div>
+{% endif %}
+{% endmacro %}

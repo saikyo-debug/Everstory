@@ -1,0 +1,697 @@
+
+/*
+=========================================================
+ ALAALA - GLOBAL THEME SYSTEM
+=========================================================
+ Central stylesheet for the entire application.
+
+ Controls:
+ - Light / Dark / System appearance
+ - Classic / Summer / Autumn / Winter / Spring themes
+ - Modern / Serif / Rounded fonts
+ - Small / Medium / Large text sizes
+ - Reduced animations
+
+ All dashboard pages should inherit these variables.
+=========================================================
+*/
+
+
+/* =====================================================
+   1. DEFAULT LIGHT THEME
+===================================================== */
+
+:root {
+    color-scheme: light;
+
+    --theme-background: #F8F8F5;
+    --theme-surface: #FFFFFF;
+    --theme-surface-secondary: #F5F3FD;
+
+    --theme-text: #21222D;
+    --theme-text-secondary: #777786;
+    --theme-text-muted: #A3A1B0;
+
+    --theme-border: #E9E7F0;
+
+    --theme-primary: #958CE8;
+    --theme-primary-dark: #7569CF;
+    --theme-primary-soft: #EFEDFC;
+
+    --theme-blue-soft: #EAF3FD;
+
+    --theme-shadow: rgba(33, 34, 45, 0.06);
+
+    --theme-font-family: Arial, Helvetica, sans-serif;
+    --theme-base-font-size: 16px;
+    --theme-text-scale: 1;
+
+    --theme-transition-duration: 0.2s;
+}
+
+
+/* =====================================================
+   2. EXPLICIT LIGHT APPEARANCE
+===================================================== */
+
+html[data-theme="light"] {
+    color-scheme: light;
+
+    --theme-background: #F8F8F5;
+    --theme-surface: #FFFFFF;
+    --theme-surface-secondary: #F5F3FD;
+
+    --theme-text: #21222D;
+    --theme-text-secondary: #777786;
+    --theme-text-muted: #A3A1B0;
+
+    --theme-border: #E9E7F0;
+
+    --theme-primary: #958CE8;
+    --theme-primary-dark: #7569CF;
+    --theme-primary-soft: #EFEDFC;
+
+    --theme-blue-soft: #EAF3FD;
+
+    --theme-shadow: rgba(33, 34, 45, 0.06);
+}
+
+
+/* =====================================================
+   3. DARK APPEARANCE
+===================================================== */
+
+html[data-theme="dark"] {
+    color-scheme: dark;
+
+    --theme-background: #181923;
+    --theme-surface: #232432;
+    --theme-surface-secondary: #2D2B40;
+
+    --theme-text: #F3F1FA;
+    --theme-text-secondary: #C0BECE;
+    --theme-text-muted: #9694A8;
+
+    --theme-border: #393849;
+
+    --theme-primary: #A69DF5;
+    --theme-primary-dark: #B7AFFB;
+    --theme-primary-soft: #35314E;
+
+    --theme-blue-soft: #29394B;
+
+    --theme-shadow: rgba(0, 0, 0, 0.18);
+}
+
+
+/* =====================================================
+   4. SEASONAL THEMES - LIGHT
+===================================================== */
+
+/* CLASSIC */
+
+html[data-season="classic"] {
+    --theme-primary: #958CE8;
+    --theme-primary-dark: #7569CF;
+    --theme-primary-soft: #EFEDFC;
+    --theme-blue-soft: #EAF3FD;
+}
+
+/* SUMMER */
+
+html[data-season="summer"] {
+    --theme-primary: #E5A64F;
+    --theme-primary-dark: #BD792D;
+    --theme-primary-soft: #FFF2D9;
+    --theme-blue-soft: #EAF4F8;
+}
+
+/* AUTUMN */
+
+html[data-season="autumn"] {
+    --theme-primary: #C47D55;
+    --theme-primary-dark: #A65D3A;
+    --theme-primary-soft: #F8E9DF;
+    --theme-blue-soft: #EDE8DE;
+}
+
+/* WINTER */
+
+html[data-season="winter"] {
+    --theme-primary: #79A9D8;
+    --theme-primary-dark: #4E82B6;
+    --theme-primary-soft: #E5F1FC;
+    --theme-blue-soft: #DDECF9;
+}
+
+/* SPRING */
+
+html[data-season="spring"] {
+    --theme-primary: #83AD8B;
+    --theme-primary-dark: #5F8D69;
+    --theme-primary-soft: #E8F3E8;
+    --theme-blue-soft: #EAF2F8;
+}
+
+
+/* =====================================================
+   5. SEASONAL THEMES - DARK
+===================================================== */
+
+/* CLASSIC */
+
+html[data-theme="dark"][data-season="classic"] {
+    --theme-primary: #A69DF5;
+    --theme-primary-dark: #B7AFFB;
+    --theme-primary-soft: #35314E;
+    --theme-blue-soft: #29394B;
+}
+
+/* SUMMER */
+
+html[data-theme="dark"][data-season="summer"] {
+    --theme-primary: #F0BC70;
+    --theme-primary-dark: #FFD18D;
+    --theme-primary-soft: #493B2D;
+    --theme-blue-soft: #293C47;
+}
+
+/* AUTUMN */
+
+html[data-theme="dark"][data-season="autumn"] {
+    --theme-primary: #E5A17B;
+    --theme-primary-dark: #F0B18B;
+    --theme-primary-soft: #49352F;
+    --theme-blue-soft: #343A42;
+}
+
+/* WINTER */
+
+html[data-theme="dark"][data-season="winter"] {
+    --theme-primary: #9BC7EF;
+    --theme-primary-dark: #B6D9F8;
+    --theme-primary-soft: #2D3D50;
+    --theme-blue-soft: #29394B;
+}
+
+/* SPRING */
+
+html[data-theme="dark"][data-season="spring"] {
+    --theme-primary: #A5D0AC;
+    --theme-primary-dark: #BCE1C1;
+    --theme-primary-soft: #304337;
+    --theme-blue-soft: #293D43;
+}
+
+
+/* =====================================================
+   6. GLOBAL FONT PREFERENCES
+===================================================== */
+
+html[data-font="modern"] {
+    --theme-font-family: Arial, Helvetica, sans-serif;
+}
+
+html[data-font="serif"] {
+    --theme-font-family: Georgia, "Times New Roman", serif;
+}
+
+html[data-font="rounded"] {
+    --theme-font-family: "Trebuchet MS", Arial, sans-serif;
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select {
+    font-family: var(--theme-font-family) !important;
+}
+
+
+/* =====================================================
+   7. GLOBAL TEXT SIZE PREFERENCES
+===================================================== */
+
+html[data-text-size="small"] {
+    --theme-base-font-size: 15px;
+    --theme-text-scale: 0.9375;
+
+    font-size: 15px !important;
+}
+
+html[data-text-size="medium"] {
+    --theme-base-font-size: 16px;
+    --theme-text-scale: 1;
+
+    font-size: 16px !important;
+}
+
+html[data-text-size="large"] {
+    --theme-base-font-size: 18px;
+    --theme-text-scale: 1.125;
+
+    font-size: 18px !important;
+}
+
+body {
+    font-size: var(--theme-base-font-size);
+}
+
+
+/* =====================================================
+   8. GLOBAL REDUCED ANIMATIONS
+===================================================== */
+
+html[data-reduced-motion="true"] *,
+html[data-reduced-motion="true"] *::before,
+html[data-reduced-motion="true"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+
+/* =====================================================
+   9. GLOBAL PAGE BACKGROUND AND TEXT
+===================================================== */
+
+html,
+body {
+    background-color: var(--theme-background);
+    color: var(--theme-text);
+}
+
+body {
+    margin: 0;
+}
+
+.dashboard-layout,
+.main-content {
+    background-color: var(--theme-background);
+    color: var(--theme-text);
+}
+
+
+/* =====================================================
+   10. SIDEBAR
+===================================================== */
+
+.sidebar {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+}
+
+.brand,
+.user-details strong {
+    color: var(--theme-text);
+}
+
+.sidebar-label {
+    color: var(--theme-text-muted);
+}
+
+.nav-item,
+.logout-link {
+    color: var(--theme-text-secondary);
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.sidebar-bottom {
+    border-color: var(--theme-border);
+}
+
+.user-details span {
+    color: var(--theme-text-secondary);
+}
+
+.user-avatar {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.logout-link:hover {
+    background: #492D38;
+    color: #F0A5B1;
+}
+
+
+/* =====================================================
+   11. TOPBAR
+===================================================== */
+
+.topbar,
+.topbar h2 {
+    color: var(--theme-text);
+}
+
+.topbar-label {
+    color: var(--theme-text-muted);
+}
+
+.topbar-profile {
+    color: var(--theme-text-secondary);
+}
+
+
+/* =====================================================
+   12. WELCOME SECTION
+===================================================== */
+
+.welcome-section {
+    border-color: var(--theme-border);
+
+    background:
+        radial-gradient(
+            circle at 90% 10%,
+            var(--theme-primary-soft) 0,
+            transparent 38%
+        ),
+        linear-gradient(
+            120deg,
+            var(--theme-surface-secondary),
+            var(--theme-blue-soft)
+        );
+}
+
+.welcome-content h1 {
+    color: var(--theme-text);
+}
+
+.welcome-content p {
+    color: var(--theme-text-secondary);
+}
+
+.eyebrow {
+    color: var(--theme-primary-dark);
+}
+
+.welcome-button {
+    background: var(--theme-primary);
+    color: #FFFFFF;
+}
+
+.welcome-button:hover {
+    background: var(--theme-primary-dark);
+}
+
+.welcome-decoration {
+    border-color: var(--theme-border);
+}
+
+.decoration-circle {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.welcome-decoration span {
+    color: var(--theme-primary);
+}
+
+
+/* =====================================================
+   13. SECTION HEADINGS
+===================================================== */
+
+.section-heading h2 {
+    color: var(--theme-text);
+}
+
+.view-label {
+    color: var(--theme-primary);
+}
+
+.view-label:hover {
+    color: var(--theme-text);
+}
+
+
+/* =====================================================
+   14. STATISTICS CARDS
+===================================================== */
+
+.stat-card {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+    box-shadow: 0 5px 20px var(--theme-shadow);
+}
+
+.stat-label {
+    color: var(--theme-text-secondary);
+}
+
+.stat-card strong {
+    color: var(--theme-text);
+}
+
+.stat-note {
+    color: var(--theme-text-muted);
+}
+
+.stat-icon.lavender {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.stat-icon.blue {
+    background: var(--theme-blue-soft);
+    color: #6499D5;
+}
+
+
+/* =====================================================
+   15. MEMORY CARDS
+===================================================== */
+
+.entry-card {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+    box-shadow: 0 5px 20px var(--theme-shadow);
+}
+
+.entry-card:hover {
+    border-color: var(--theme-primary);
+    box-shadow: 0 10px 27px var(--theme-shadow);
+}
+
+.entry-card h3 {
+    color: var(--theme-text);
+}
+
+.entry-card p {
+    color: var(--theme-text-secondary);
+}
+
+.entry-date {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.view-all-entries a {
+    background: var(--theme-primary-soft);
+    border-color: var(--theme-border);
+    color: var(--theme-primary);
+}
+
+.view-all-entries a:hover {
+    background: var(--theme-primary);
+    border-color: var(--theme-primary);
+    color: #FFFFFF;
+}
+
+
+/* =====================================================
+   16. EMPTY STATES
+===================================================== */
+
+.empty-state {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+}
+
+.empty-icon {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.empty-state h3 {
+    color: var(--theme-text);
+}
+
+.empty-state p {
+    color: var(--theme-text-secondary);
+}
+
+.coming-label {
+    color: var(--theme-primary);
+}
+
+
+/* =====================================================
+   17. PLACEHOLDER SECTIONS
+===================================================== */
+
+.placeholder-section {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+}
+
+.placeholder-section h2 {
+    color: var(--theme-text);
+}
+
+.placeholder-section p {
+    color: var(--theme-text-secondary);
+}
+
+.placeholder-icon {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.coming-soon {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+
+/* =====================================================
+   18. FOOTER AND MOBILE NAVIGATION
+===================================================== */
+
+.dashboard-footer {
+    border-color: var(--theme-border);
+    color: var(--theme-text-muted);
+}
+
+.mobile-nav {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+}
+
+.mobile-nav-item {
+    color: var(--theme-text-muted);
+}
+
+.mobile-nav-item.active {
+    color: var(--theme-primary);
+}
+
+
+/* =====================================================
+   19. SETTINGS PAGE
+===================================================== */
+
+.settings-page {
+    color: var(--theme-text);
+}
+
+.settings-page h1,
+.settings-page h2,
+.settings-page h3 {
+    color: var(--theme-text);
+}
+
+.settings-page p {
+    color: var(--theme-text-secondary);
+}
+
+.settings-card {
+    background: var(--theme-surface);
+    border-color: var(--theme-border);
+    box-shadow: 0 5px 20px var(--theme-shadow);
+}
+
+.settings-section-heading p {
+    color: var(--theme-text-secondary);
+}
+
+.settings-status {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.settings-card-note {
+    border-color: var(--theme-border);
+    background: var(--theme-surface-secondary);
+}
+
+.settings-card-note p {
+    color: var(--theme-text-secondary);
+}
+
+.settings-placeholder {
+    color: var(--theme-text);
+}
+
+.settings-placeholder p,
+.security-description p {
+    color: var(--theme-text-secondary);
+}
+
+
+/* =====================================================
+   20. FORM ELEMENTS
+===================================================== */
+
+input,
+textarea,
+select {
+    color: var(--theme-text);
+    background-color: var(--theme-surface);
+    border-color: var(--theme-border);
+}
+
+button {
+    font-family: var(--theme-font-family);
+}
+
+
+/* =====================================================
+   21. SMOOTH TRANSITIONS
+===================================================== */
+
+body,
+.sidebar,
+.main-content,
+.mobile-nav,
+.stat-card,
+.entry-card,
+.placeholder-section,
+.settings-card,
+.settings-intro,
+button,
+a {
+    transition:
+        background-color var(--theme-transition-duration) ease,
+        color var(--theme-transition-duration) ease,
+        border-color var(--theme-transition-duration) ease;
+}
+
+
+/* =====================================================
+   22. ACCESSIBILITY
+===================================================== */
+
+:focus-visible {
+    outline: 3px solid var(--theme-primary);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

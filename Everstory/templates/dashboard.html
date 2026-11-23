@@ -1,0 +1,235 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import media_badges with context %}
+{% set active = 'home' %}
+
+{% block title %}My Diary{% endblock %}
+{% block page_title %}My Space{% endblock %}
+
+{% block content %}
+
+    <!-- WELCOME SECTION -->
+    <section class="welcome-section">
+
+        <div class="welcome-content">
+
+            <span class="eyebrow">A LITTLE SPACE JUST FOR YOU</span>
+
+            <h1>Hello, {{ user["full_name"].split()[0] }}! 💜</h1>
+
+            <p>
+                Every day is a new page in your story.
+                Take your time, breathe, and make room
+                for the moments that matter.
+            </p>
+
+            <div class="welcome-actions">
+                <a href="{{ url_for('new_entry') }}" class="welcome-button">
+                    Write a memory <span aria-hidden="true">+</span>
+                </a>
+
+                <a href="{{ url_for('entries') }}" class="welcome-button welcome-button-light">
+                    Explore my memories <span aria-hidden="true">→</span>
+                </a>
+            </div>
+
+        </div>
+
+        <div class="welcome-decoration">
+            <div class="decoration-circle">♡</div>
+            <span>Your story is worth keeping.</span>
+        </div>
+
+    </section>
+
+    {% if capsules_ready %}
+    <a class="notice-banner" href="{{ url_for('capsules.index') }}">
+        <span class="notice-icon" aria-hidden="true">⧗</span>
+        <span>
+            <strong>
+                {{ capsules_ready }} time
+                {{ 'capsule is' if capsules_ready == 1 else 'capsules are' }}
+                ready to open!
+            </strong>
+            A message from your past self is waiting.
+        </span>
+        <span aria-hidden="true">→</span>
+    </a>
+    {% endif %}
+
+    <!-- OVERVIEW -->
+    <section class="overview-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">YOUR JOURNEY</span>
+                <h2>Your diary at a glance</h2>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+
+            <a class="stat-card stat-link" href="{{ url_for('entries') }}">
+                <div class="stat-icon lavender">▤</div>
+                <span class="stat-label">Total Entries</span>
+                <strong>{{ stats.total }}</strong>
+                <span class="stat-note">Your saved memories</span>
+            </a>
+
+            <a class="stat-card stat-link" href="{{ url_for('entries', filter='favorites') }}">
+                <div class="stat-icon blue">♡</div>
+                <span class="stat-label">Favorite Memories</span>
+                <strong>{{ stats.favorites }}</strong>
+                <span class="stat-note">
+                    {% if stats.favorites %}Moments you treasure{% else %}Tap the heart on a memory to add one{% endif %}
+                </span>
+            </a>
+
+            <a class="stat-card stat-link" href="{{ url_for('calendar_view') }}">
+                <div class="stat-icon peach">✧</div>
+                <span class="stat-label">Days of Memories</span>
+                <strong>{{ stats.days }}</strong>
+                <span class="stat-note">
+                    {% if stats.days %}Days you wrote something down{% else %}Your story starts today{% endif %}
+                </span>
+            </a>
+
+        </div>
+
+    </section>
+
+    {% if on_this_day %}
+    <!-- ON THIS DAY -->
+    <section class="entries-section">
+
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">LOOKING BACK</span>
+                <h2>On this day</h2>
+            </div>
+        </div>
+
+        <div class="recent-entries-list">
+            {% for entry in on_this_day[:3] %}
+                <article class="entry-card">
+                    <h3><a href="{{ url_for('view_entry', entry_id=entry['id']) }}">{{ entry["title"] }}</a></h3>
+                    <span class="entry-date">{{ entry["created_at"] | pretty_date }}</span>
+                    <p>{{ entry["content"] | excerpt(200) }}</p>
+                </article>
+            {% endfor %}
+        </div>
+
+    </section>
+    {% endif %}
+
+    <!-- RECENT ENTRIES -->
+    <section class="entries-section" id="entries">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="eyebrow">YOUR LITTLE MOMENTS</span>
+                <h2>Recent memories</h2>
+            </div>
+
+            <a href="{{ url_for('entries') }}" class="view-label">
+                My diary
+            </a>
+
+        </div>
+
+        {% if entries %}
+
+            <div class="recent-entries-list">
+
+                {% for entry in entries %}
+
+                    <article class="entry-card">
+
+                        <h3>
+                            <a href="{{ url_for('view_entry', entry_id=entry['id']) }}">{{ entry["title"] }}</a>
+                        </h3>
+
+                        <span class="entry-date">
+                            {{ entry["created_at"] | pretty_datetime }}
+                        </span>
+
+                        {{ media_badges(media_summary.get(entry['id'])) }}
+
+                        <p>{{ entry["content"] | excerpt(260) }}</p>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+            {% if stats.total > 3 %}
+                <div class="view-all-entries">
+                    <a href="{{ url_for('entries') }}">
+                        View all {{ stats.total }} memories →
+                    </a>
+                </div>
+            {% endif %}
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">✎</div>
+
+                <h3>Your story starts here.</h3>
+
+                <p>
+                    You haven't saved any diary entries yet.
+                    This space will hold your thoughts,
+                    experiences, and favorite memories.
+                </p>
+
+                <a class="primary-link" href="{{ url_for('new_entry') }}">
+                    Write your first memory
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- QUICK LINKS -->
+    <section class="quick-grid">
+
+        <a class="quick-card" href="{{ url_for('calendar_view') }}">
+            <div class="placeholder-icon">▦</div>
+            <div>
+                <h3>Memory calendar</h3>
+                <p>Revisit your entries by date.</p>
+            </div>
+        </a>
+
+        <a class="quick-card" href="{{ url_for('assistant.page') }}">
+            <div class="placeholder-icon">✧</div>
+            <div>
+                <h3>Diary assistant</h3>
+                <p>Search memories and find related words.</p>
+            </div>
+        </a>
+
+        <a class="quick-card" href="{{ url_for('capsules.index') }}">
+            <div class="placeholder-icon">⧗</div>
+            <div>
+                <h3>Time capsules</h3>
+                <p>Seal a message for your future self.</p>
+            </div>
+        </a>
+
+        <a class="quick-card" href="{{ url_for('settings_view') }}">
+            <div class="placeholder-icon">⚙</div>
+            <div>
+                <h3>Settings</h3>
+                <p>Appearance, offline use and security.</p>
+            </div>
+        </a>
+
+    </section>
+
+{% endblock %}

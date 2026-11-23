@@ -1,0 +1,97 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import csrf_field with context %}
+{% set active = 'capsules' %}
+
+{% block title %}Seal a Time Capsule{% endblock %}
+{% block page_title %}Seal a Time Capsule{% endblock %}
+{% block topbar_label %}A MESSAGE FOR LATER{% endblock %}
+
+{% block content %}
+
+    <a href="{{ url_for('capsules.index') }}" class="back-link">← Back to Time Capsules</a>
+
+    <section class="form-card">
+
+        <p class="form-intro">
+            Once sealed, you won't be able to read or change this capsule until it opens.
+            Choose the date carefully.
+        </p>
+
+        <form method="POST"
+              action="{{ url_for('capsules.create') }}"
+              enctype="multipart/form-data"
+              class="entry-form"
+              id="capsuleForm">
+
+            {{ csrf_field() }}
+
+            <label for="title">Capsule title</label>
+            <input type="text" id="title" name="title" maxlength="{{ max_title }}"
+                   placeholder="For me, one year from now…"
+                   value="{{ request.form.get('title', '') }}" required>
+
+            <label for="content">Your message</label>
+            <textarea id="content" name="content" rows="9" maxlength="50000"
+                      placeholder="Dear future me…" required>{{ request.form.get('content', '') }}</textarea>
+
+            <fieldset class="attachments">
+                <legend>When should it open?</legend>
+
+                <div class="quick-dates" id="quickDates">
+                    <button type="button" class="chip" data-add-days="1">Tomorrow</button>
+                    <button type="button" class="chip" data-add-months="1">In 1 month</button>
+                    <button type="button" class="chip" data-add-months="6">In 6 months</button>
+                    <button type="button" class="chip" data-add-months="12">In 1 year</button>
+                    <button type="button" class="chip" data-add-months="60">In 5 years</button>
+                </div>
+
+                <div class="date-row">
+                    <div>
+                        <label for="unlock_date">Date</label>
+                        <input type="date" id="unlock_date" name="unlock_date"
+                               min="{{ min_date }}"
+                               value="{{ request.form.get('unlock_date', '') }}" required>
+                    </div>
+
+                    <div>
+                        <label for="unlock_time">Time</label>
+                        <input type="time" id="unlock_time" name="unlock_time"
+                               value="{{ request.form.get('unlock_time', '09:00') }}">
+                    </div>
+                </div>
+
+                <p class="field-hint">Times use Philippine time (UTC+8).</p>
+            </fieldset>
+
+            <fieldset class="attachments">
+                <legend>Photos, voice and video (optional)</legend>
+
+                <label for="mediaInput" class="file-picker">
+                    <span class="file-picker-title">＋ Add photos, voice notes or videos</span>
+                    <span class="file-picker-hint">
+                        Up to {{ max_files }} files · they stay locked until the capsule opens
+                    </span>
+                </label>
+
+                <input type="file" id="mediaInput" name="media" class="file-input" multiple
+                       accept="image/jpeg,image/png,image/gif,image/webp,audio/*,video/mp4,video/webm,video/quicktime">
+
+                <ul class="file-list" id="fileList"></ul>
+            </fieldset>
+
+            <div class="form-actions">
+                <button type="submit" class="button-primary button-wide">
+                    Seal this capsule <span aria-hidden="true">🔒</span>
+                </button>
+            </div>
+
+        </form>
+
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/file-picker.js') }}"></script>
+<script src="{{ url_for('static', filename='js/capsule-form.js') }}"></script>
+{% endblock %}

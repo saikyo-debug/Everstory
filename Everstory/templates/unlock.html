@@ -1,0 +1,59 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import csrf_field with context %}
+{% set active = 'capsules' %}
+
+{% block title %}Confirm it's you{% endblock %}
+{% block page_title %}Confirm it's you{% endblock %}
+{% block topbar_label %}EXTRA CHECK{% endblock %}
+
+{% block content %}
+
+    <section class="form-card unlock-card"
+             id="unlockCard"
+             data-verify-url="{{ url_for('voice.verify') }}"
+             data-next="{{ next_url }}">
+
+        <div class="capsule-lock" aria-hidden="true">🎙</div>
+
+        <h1>Say your passphrase</h1>
+
+        <p class="form-intro">
+            Press the button and say:
+            <strong>“{{ app_name }}, every memory deserves to be remembered.”</strong>
+        </p>
+
+        <div class="voice-meter" aria-hidden="true">
+            <div class="voice-meter-bar" id="voiceMeterBar"></div>
+        </div>
+
+        <div class="settings-button-row unlock-actions">
+            <button type="button" class="button-primary" id="unlockRecord">🎙 Speak now</button>
+        </div>
+
+        <p class="settings-inline-status" id="unlockMessage" role="status"></p>
+
+        <hr class="unlock-divider">
+
+        <h2 class="unlock-alt-title">Or use your password</h2>
+
+        <form method="POST" action="{{ url_for('voice.unlock_with_password') }}" class="entry-form">
+            {{ csrf_field() }}
+            <input type="hidden" name="next" value="{{ next_url }}">
+
+            <label for="unlockPassword">Password</label>
+            <input type="password" id="unlockPassword" name="password"
+                   autocomplete="current-password" maxlength="128" required>
+
+            <div class="form-actions">
+                <button type="submit" class="button-secondary button-wide">Continue with password</button>
+            </div>
+        </form>
+
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/voice-features.js') }}"></script>
+<script src="{{ url_for('static', filename='js/voice-unlock.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base_public.html" %}
+{% from "_macros.html" import brand, csrf_field with context %}
+
+{% block title %}Create Account | {{ app_name }}{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <main class="auth-page">
+
+        {{ brand() }}
+
+        <section class="auth-card">
+
+            <div class="welcome-icon">♡</div>
+
+            <span class="eyebrow">A LITTLE SPACE JUST FOR YOU</span>
+
+            <h1>Let's make room for your memories.</h1>
+
+            <p class="subtitle">
+                Create your personal {{ app_name }} account and start
+                preserving the moments that matter.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+
+                <!-- CSRF SECURITY TOKEN -->
+                {{ csrf_field() }}
+
+                <label for="full_name">Full name</label>
+                <input
+                    type="text"
+                    id="full_name"
+                    name="full_name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    maxlength="100"
+                    required
+                >
+
+                <label for="email">Email address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    maxlength="254"
+                    required
+                >
+
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="At least 8 characters"
+                    autocomplete="new-password"
+                    minlength="8"
+                    maxlength="128"
+                    required
+                >
+
+                <label for="confirm_password">Confirm password</label>
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="Enter your password again"
+                    autocomplete="new-password"
+                    maxlength="128"
+                    required
+                >
+
+                <button type="submit" class="auth-button">
+                    Create my account <span>→</span>
+                </button>
+
+            </form>
+
+            <p class="auth-switch">
+                Already have an account?
+                <a href="{{ url_for('login') }}">Log in</a>
+            </p>
+
+        </section>
+
+        <p class="bottom-note">
+            Your memories deserve a place to stay. 💜
+        </p>
+
+    </main>
+
+{% endblock %}

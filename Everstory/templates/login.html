@@ -1,0 +1,86 @@
+{% extends "base_public.html" %}
+{% from "_macros.html" import brand, csrf_field with context %}
+
+{% block title %}Log In | {{ app_name }}{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <main class="auth-page">
+
+        {{ brand() }}
+
+        <section class="auth-card">
+
+            <div class="welcome-icon">✦</div>
+
+            <span class="eyebrow">WELCOME BACK</span>
+
+            <h1>Your memories are waiting.</h1>
+
+            <p class="subtitle">
+                Log in to return to your personal space.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="message {{ category }}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+                <!-- CSRF SECURITY TOKEN -->
+                {{ csrf_field() }}
+
+                {% if next_target %}
+                    <input type="hidden" name="next" value="{{ next_target }}">
+                {% endif %}
+
+                <label for="email">Email address</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button type="submit" class="auth-button">
+                    Welcome back <span>→</span>
+                </button>
+
+            </form>
+
+            <p class="auth-switch">
+                New to {{ app_name }}?
+                <a href="{{ url_for('register') }}">Create an account</a>
+            </p>
+
+        </section>
+
+        <p class="bottom-note">
+            Take a moment. You're home. 💜
+        </p>
+
+    </main>
+
+{% endblock %}

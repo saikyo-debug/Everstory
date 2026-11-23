@@ -1,0 +1,169 @@
+{#
+    One form for both writing a new memory and editing an existing one.
+    `entry` is None when writing a new memory.
+#}
+{% extends "base_app.html" %}
+{% from "_macros.html" import csrf_field with context %}
+{% set active = 'entries' %}
+{% set is_edit = entry is not none %}
+
+{% block title %}{{ 'Edit memory' if is_edit else 'Write a Memory' }}{% endblock %}
+{% block page_title %}{{ 'Edit your memory' if is_edit else 'Write your memory' }}{% endblock %}
+{% block topbar_label %}A MOMENT WORTH KEEPING{% endblock %}
+
+{% block content %}
+
+    <a href="{{ url_for('view_entry', entry_id=entry['id']) if is_edit else url_for('entries') }}"
+       class="back-link">
+        {{ '← Back to this memory' if is_edit else '← Back to My Entries' }}
+    </a>
+
+    <section class="form-card">
+
+        <p class="form-intro">
+            Take your time. This is your space to write whatever is on your mind.
+        </p>
+
+        <p class="offline-note" id="offlineNote" hidden>
+            You're offline. Your words will be saved on this device and added to
+            your diary automatically when you're back online.
+        </p>
+
+        <!-- MEMORY FORM -->
+        <form method="POST"
+              action="{{ url_for('edit_entry', entry_id=entry['id']) if is_edit else url_for('new_entry') }}"
+              enctype="multipart/form-data"
+              class="entry-form"
+              id="entryForm"
+              data-mode="{{ 'edit' if is_edit else 'new' }}"
+              data-api-url="{{ url_for('sync.create_entry_from_offline') }}"
+              data-entry-url="{{ url_for('view_entry', entry_id=0) }}"
+              data-max-files="{{ max_files }}">
+
+            <!-- CSRF SECURITY TOKEN -->
+            {{ csrf_field() }}
+
+            <label for="title">Entry title</label>
+
+            <input
+                type="text"
+                id="title"
+                name="title"
+                maxlength="{{ max_title }}"
+                placeholder="Give this memory a title..."
+                value="{{ request.form.get('title', entry['title'] if is_edit else '') }}"
+                required
+            >
+
+            <label for="content">Your memory</label>
+
+            <textarea
+                id="content"
+                name="content"
+                rows="10"
+                maxlength="50000"
+                placeholder="Dear diary..."
+                required
+            >{{ request.form.get('content', entry['content'] if is_edit else '') }}</textarea>
+
+            <p class="field-hint"><span id="contentCount">0</span> / 50,000 characters</p>
+
+            <!-- ATTACHMENTS -->
+            <fieldset class="attachments">
+
+                <legend>Photos, voice and video</legend>
+
+                {% if is_edit and media %}
+                    <div class="existing-media">
+                        <p class="field-hint">Current attachments. Tick any you want to remove.</p>
+
+                        {% for item in media %}
+                            <label class="existing-media-item">
+                                <input type="checkbox" name="remove_media" value="{{ item['id'] }}">
+
+                                {% if item['kind'] == 'photo' %}
+                                    <img src="{{ url_for('media.serve_media', media_id=item['id']) }}"
+                                         alt="" loading="lazy">
+                                {% else %}
+                                    <span class="existing-media-icon" aria-hidden="true">
+                                        {{ '🎙' if item['kind'] == 'audio' else '🎬' }}
+                                    </span>
+                                {% endif %}
+
+                                <span class="existing-media-name">{{ item['original_name'] }}</span>
+                                <span class="existing-media-remove">Remove</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- VOICE RECORDER (shown by JavaScript when the browser supports it) -->
+                <div class="recorder" id="recorder" hidden>
+
+                    <div class="recorder-controls">
+                        <button type="button" class="button-secondary" id="recStart">
+                            🎙 Record voice note
+                        </button>
+
+                        <button type="button" class="button-danger" id="recStop" hidden>
+                            ■ Stop
+                        </button>
+
+                        <span class="recorder-timer" id="recTimer">0:00</span>
+                    </div>
+
+                    <div class="recorder-preview" id="recPreview" hidden>
+                        <audio controls id="recAudio"></audio>
+                        <button type="button" class="button-text" id="recDiscard">Discard</button>
+                    </div>
+
+                    <p class="recorder-status" id="recStatus" role="status"></p>
+                </div>
+
+                <label for="mediaInput" class="file-picker">
+                    <span class="file-picker-title">＋ Add photos, voice notes or videos</span>
+                    <span class="file-picker-hint">
+                        Up to {{ max_files }} files · photos 10 MB · voice 25 MB · video 50 MB
+                    </span>
+                </label>
+
+                <input
+                    type="file"
+                    id="mediaInput"
+                    name="media"
+                    class="file-input"
+                    multiple
+                    accept="image/jpeg,image/png,image/gif,image/webp,audio/*,video/mp4,video/webm,video/quicktime"
+                >
+
+                <ul class="file-list" id="fileList"></ul>
+
+            </fieldset>
+
+            <div class="form-actions">
+
+                <button type="submit" class="button-primary button-wide" id="saveButton">
+                    {{ 'Save changes' if is_edit else 'Save my memory' }} <span aria-hidden="true">♡</span>
+                </button>
+
+                {% if is_edit %}
+                    <a href="{{ url_for('view_entry', entry_id=entry['id']) }}" class="button-text">Cancel</a>
+                {% endif %}
+
+            </div>
+
+        </form>
+
+        <p class="bottom-note">
+            Your memories belong to you. 💜
+        </p>
+
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/file-picker.js') }}"></script>
+<script src="{{ url_for('static', filename='js/recorder.js') }}"></script>
+<script src="{{ url_for('static', filename='js/entry-form.js') }}"></script>
+{% endblock %}

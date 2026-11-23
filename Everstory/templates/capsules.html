@@ -1,0 +1,96 @@
+{% extends "base_app.html" %}
+{% set active = 'capsules' %}
+
+{% macro capsule_card(capsule) %}
+    <a class="capsule-card capsule-{{ capsule.state }}"
+       href="{{ url_for('capsules.view', capsule_id=capsule.id) }}">
+
+        <div class="capsule-icon" aria-hidden="true">
+            {{ '🔒' if capsule.state == 'sealed' else ('🎁' if capsule.state == 'ready' else '✉') }}
+        </div>
+
+        <div class="capsule-text">
+            <h3>{{ capsule.title }}</h3>
+            <p>
+                {% if capsule.state == 'sealed' %}
+                    Opens {{ capsule.unlock_label }}
+                {% elif capsule.state == 'ready' %}
+                    Ready since {{ capsule.unlock_at | pretty_date }}
+                {% else %}
+                    Opened · was sealed until {{ capsule.unlock_at | pretty_date }}
+                {% endif %}
+            </p>
+        </div>
+
+        <span class="capsule-pill">{{ capsule.countdown }}</span>
+    </a>
+{% endmacro %}
+
+{% block title %}Time Capsules{% endblock %}
+{% block page_title %}Time Capsules{% endblock %}
+{% block topbar_label %}MESSAGES TO YOUR FUTURE SELF{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{{ url_for('capsules.create') }}" class="button-primary topbar-action">
+        <span aria-hidden="true">+</span> Seal a Capsule
+    </a>
+{% endblock %}
+
+{% block content %}
+
+    <section class="capsule-intro">
+        <div class="capsule-intro-icon" aria-hidden="true">⧗</div>
+        <div>
+            <span class="eyebrow">A GIFT FOR YOUR FUTURE SELF</span>
+            <h2>Write today. Open it later.</h2>
+            <p>
+                Seal a message, a photo or a voice note, and choose the day it opens.
+                Until then, its contents stay locked, even from you.
+            </p>
+        </div>
+    </section>
+
+    {% if total == 0 %}
+
+        <section class="empty-state">
+            <div class="empty-icon">⧗</div>
+            <h3>No time capsules yet.</h3>
+            <p>
+                Write a letter to yourself a year from now, or save a memory you
+                want to rediscover on a special day.
+            </p>
+            <a class="primary-link" href="{{ url_for('capsules.create') }}">Seal your first capsule</a>
+        </section>
+
+    {% else %}
+
+        {% if ready %}
+        <section class="capsule-group">
+            <h2 class="group-title">Ready to open</h2>
+            <div class="capsule-list">
+                {% for capsule in ready %}{{ capsule_card(capsule) }}{% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if sealed %}
+        <section class="capsule-group">
+            <h2 class="group-title">Sealed</h2>
+            <div class="capsule-list">
+                {% for capsule in sealed %}{{ capsule_card(capsule) }}{% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if opened %}
+        <section class="capsule-group">
+            <h2 class="group-title">Opened</h2>
+            <div class="capsule-list">
+                {% for capsule in opened %}{{ capsule_card(capsule) }}{% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+    {% endif %}
+
+{% endblock %}

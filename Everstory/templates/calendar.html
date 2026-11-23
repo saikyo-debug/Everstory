@@ -1,0 +1,201 @@
+{% extends "base_app.html" %}
+{% set active = 'calendar' %}
+
+{% block title %}Memory Calendar{% endblock %}
+{% block page_title %}Memory Calendar{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/calendar.css') }}">
+{% endblock %}
+
+{% block content %}
+
+    <!-- INTRODUCTION -->
+    <section class="calendar-intro">
+
+        <div>
+            <span class="eyebrow">YOUR JOURNEY IN TIME</span>
+
+            <h2>Every date holds a memory. 💜</h2>
+
+            <p>
+                Revisit the moments you've written down.
+                Select a date to explore your memories.
+            </p>
+        </div>
+
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="calendar-container">
+
+        <div class="calendar-header">
+
+            <div>
+                <span class="eyebrow">
+                    {{ month_entry_count }} {{ 'MEMORY' if month_entry_count == 1 else 'MEMORIES' }} THIS MONTH
+                </span>
+                <h2>{{ month_name }} {{ year }}</h2>
+            </div>
+
+            <div class="calendar-controls">
+
+                <a href="{{ url_for(
+                    'calendar_view',
+                    year=previous_year,
+                    month=previous_month,
+                    date='%04d-%02d-01'|format(previous_year, previous_month)
+                ) }}" class="calendar-arrow" aria-label="Previous month">
+                    ‹
+                </a>
+
+                <a href="{{ url_for('calendar_view') }}"
+                   class="today-button">
+                    Today
+                </a>
+
+                <a href="{{ url_for(
+                    'calendar_view',
+                    year=next_year,
+                    month=next_month,
+                    date='%04d-%02d-01'|format(next_year, next_month)
+                ) }}" class="calendar-arrow" aria-label="Next month">
+                    ›
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="calendar-grid">
+
+            {% for weekday in ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] %}
+
+                <div class="calendar-weekday">
+                    {{ weekday }}
+                </div>
+
+            {% endfor %}
+
+            {% for week in weeks %}
+
+                {% for day in week %}
+
+                    {% if day == 0 %}
+
+                        <div class="calendar-day empty"></div>
+
+                    {% else %}
+
+                        {% set day_date = "%04d-%02d-%02d"|format(year, month, day) %}
+                        {% set has_entries = day_date in days_with_entries %}
+                        {% set is_today = day_date == today.isoformat() %}
+                        {% set is_selected = day_date == selected_date.isoformat() %}
+
+                        <a href="{{ url_for(
+                            'calendar_view',
+                            year=year,
+                            month=month,
+                            date=day_date
+                        ) }}"
+                        class="calendar-day{% if has_entries %} has-memory{% endif %}{% if is_today %} is-today{% endif %}{% if is_selected %} selected-day{% endif %}"
+                        {% if is_selected %}aria-current="date"{% endif %}
+                        aria-label="{{ day }} {{ month_name }}{% if has_entries %}, has memories{% endif %}">
+
+                            <span>{{ day }}</span>
+
+                            {% if has_entries %}
+                                <span class="memory-indicator"></span>
+                            {% endif %}
+
+                        </a>
+
+                    {% endif %}
+
+                {% endfor %}
+
+            {% endfor %}
+
+        </div>
+
+        <div class="calendar-legend">
+            <span class="legend-dot"></span>
+            <span>Days with saved memories</span>
+        </div>
+
+    </section>
+
+    <!-- SELECTED DATE MEMORIES -->
+    <section class="selected-date-section">
+
+        <div class="selected-date-heading">
+
+            <div>
+                <span class="eyebrow">MEMORY TIMELINE</span>
+
+                <h2>
+                    {{ selected_date.strftime("%B %d, %Y") }}
+                </h2>
+            </div>
+
+            <a href="{{ url_for('new_entry') }}"
+               class="write-memory-button">
+                + Write a Memory
+            </a>
+
+        </div>
+
+        {% if selected_entries %}
+
+            <div class="calendar-entries">
+
+                {% for entry in selected_entries %}
+
+                    <article class="calendar-entry-card">
+
+                        <div class="entry-date-icon">♡</div>
+
+                        <div class="calendar-entry-content">
+
+                            <h3>
+                                <a href="{{ url_for('view_entry', entry_id=entry['id']) }}">{{ entry["title"] }}</a>
+                            </h3>
+
+                            <span class="entry-time">
+                                {{ entry["created_at"] | pretty_datetime }}
+                            </span>
+
+                            <p>{{ entry["content"] | excerpt(300) }}</p>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-calendar-state">
+
+                <div class="empty-calendar-icon">☁</div>
+
+                <h3>No memories for this day</h3>
+
+                <p>
+                    This date is waiting for a story.
+                    Write something you'd like to remember.
+                </p>
+
+                <a href="{{ url_for('new_entry') }}">
+                    Create a memory →
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+{% endblock %}

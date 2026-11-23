@@ -1,0 +1,791 @@
+{% extends "base_app.html" %}
+{% set active = 'settings' %}
+
+{% block title %}Settings{% endblock %}
+{% block page_title %}Personal Settings{% endblock %}
+{% block topbar_label %}MAKE {{ app_name|upper }} YOURS{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+{% endblock %}
+
+{% block content %}
+
+        <div class="settings-page">
+
+        <!-- INTRODUCTION -->
+        <section class="settings-intro">
+
+            <div class="settings-intro-icon">⚙</div>
+
+            <div>
+                <span class="eyebrow">YOUR SPACE, YOUR WAY</span>
+
+                <h1>Make yourself at home. 💜</h1>
+
+                <p>
+                    Manage your account, personalize your diary,
+                    and make {{ app_name }} feel a little more like you.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- ACCOUNT SETTINGS -->
+        <section class="settings-section">
+
+            <div class="settings-section-heading">
+
+                <div class="settings-section-icon lavender-icon">
+                    ♙
+                </div>
+
+                <div>
+                    <span class="eyebrow">YOUR INFORMATION</span>
+                    <h2>Account</h2>
+                    <p>Manage the information connected to your {{ app_name }} account.</p>
+                </div>
+
+            </div>
+
+            <div class="settings-card">
+
+                <div class="settings-card-heading">
+                    <div>
+                        <h3>Personal information</h3>
+                        <p>Your account details are shown below.</p>
+                    </div>
+
+                    <span class="settings-status">YOUR ACCOUNT</span>
+                </div>
+
+                <div class="account-details-grid">
+
+                    <div class="account-detail">
+                        <span>Full name</span>
+                        <strong>{{ user["full_name"] }}</strong>
+                    </div>
+
+                    <div class="account-detail">
+                        <span>Email address</span>
+                        <strong>{{ user["email"] }}</strong>
+                    </div>
+
+                    <div class="account-detail">
+                        <span>Member since</span>
+                        <strong>{{ user["created_at"] | pretty_date }}</strong>
+                    </div>
+
+                </div>
+
+                <div class="settings-card-note">
+                    <span>♡</span>
+                    <p>
+                        Profile editing will be available in a future update.
+                    </p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- APPEARANCE SETTINGS -->
+        <section class="settings-section">
+
+            <div class="settings-section-heading">
+
+                <div class="settings-section-icon blue-icon">
+                    ✧
+                </div>
+
+                <div>
+                    <span class="eyebrow">A TOUCH OF PERSONALITY</span>
+                    <h2>Appearance</h2>
+                    <p>Choose how {{ app_name }} looks on your devices.</p>
+                </div>
+
+            </div>
+
+            <form
+                method="POST"
+                action="{{ url_for('settings_view') }}"
+                class="settings-card appearance-form"
+                id="appearanceForm"
+            >
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <input type="hidden" name="form_type" value="appearance">
+
+                <div class="settings-card-heading">
+                    <div>
+                        <h3>Choose your appearance</h3>
+                        <p>
+                            Personalize your diary with a look that feels
+                            comfortable for you.
+                        </p>
+                    </div>
+
+                    <span class="settings-status">PERSONALIZED</span>
+                </div>
+
+                <div class="theme-mode-options">
+
+                    <label class="theme-mode-card">
+
+                        <input
+                            type="radio"
+                            name="theme_mode"
+                            value="light"
+                            {% if preferences["theme_mode"] == "light" %}checked{% endif %}
+                        >
+
+                        <span class="theme-mode-content">
+
+                            <span class="theme-mode-icon light-icon">☀</span>
+
+                            <strong>Light</strong>
+
+                            <span class="theme-mode-description">
+                                A bright and cozy appearance.
+                            </span>
+
+                            <span class="theme-mode-check">✓</span>
+
+                        </span>
+
+                    </label>
+
+
+                    <label class="theme-mode-card">
+
+                        <input
+                            type="radio"
+                            name="theme_mode"
+                            value="dark"
+                            {% if preferences["theme_mode"] == "dark" %}checked{% endif %}
+                        >
+
+                        <span class="theme-mode-content">
+
+                            <span class="theme-mode-icon dark-icon">☾</span>
+
+                            <strong>Dark</strong>
+
+                            <span class="theme-mode-description">
+                                A softer appearance for darker surroundings.
+                            </span>
+
+                            <span class="theme-mode-check">✓</span>
+
+                        </span>
+
+                    </label>
+
+
+                    <label class="theme-mode-card">
+
+                        <input
+                            type="radio"
+                            name="theme_mode"
+                            value="system"
+                            {% if preferences["theme_mode"] == "system" %}checked{% endif %}
+                        >
+
+                        <span class="theme-mode-content">
+
+                            <span class="theme-mode-icon system-icon">◐</span>
+
+                            <strong>System</strong>
+
+                            <span class="theme-mode-description">
+                                Automatically follows your device settings.
+                            </span>
+
+                            <span class="theme-mode-check">✓</span>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+                <div class="theme-system-note">
+                    <span>♡</span>
+                    <p>
+                        Your selection is saved automatically.
+                        When System is selected, {{ app_name }} follows your
+                        phone or computer's appearance settings.
+                    </p>
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- PREFERENCES -->
+        <section class="settings-section">
+
+            <div class="settings-section-heading">
+
+                <div class="settings-section-icon peach-icon">
+                    ♡
+                </div>
+
+                <div>
+                    <span class="eyebrow">YOUR DIARY HABITS</span>
+                    <h2>Preferences</h2>
+                    <p>Personalize the experience across your {{ app_name }} pages.</p>
+                </div>
+
+            </div>
+
+            <form
+                method="POST"
+                action="{{ url_for('settings_view') }}"
+                class="settings-card preferences-form"
+                id="preferencesForm"
+            >
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <input type="hidden" name="form_type" value="preferences">
+
+                <div class="settings-card-heading">
+
+                    <div>
+                        <h3>Make it feel like yours</h3>
+                        <p>
+                            Customize the colors, typography, and motion
+                            throughout your personal diary.
+                        </p>
+                    </div>
+
+                    <span class="settings-status">YOUR CHOICES</span>
+
+                </div>
+
+
+                <!-- SEASONAL THEME -->
+                <div class="preference-group">
+
+                    <div class="preference-heading">
+                        <span class="preference-icon">🎨</span>
+
+                        <div>
+                            <label for="seasonalTheme">Seasonal theme</label>
+                            <p>Choose a color atmosphere for your diary.</p>
+                        </div>
+                    </div>
+
+                    <select
+                        id="seasonalTheme"
+                        name="seasonal_theme"
+                        class="preference-select"
+                    >
+                        <option value="classic"
+                            {% if preferences["seasonal_theme"] == "classic" %}selected{% endif %}>
+                            Classic – {{ app_name }}'s original colors
+                        </option>
+
+                        <option value="summer"
+                            {% if preferences["seasonal_theme"] == "summer" %}selected{% endif %}>
+                            Summer – Warm and sunny
+                        </option>
+
+                        <option value="autumn"
+                            {% if preferences["seasonal_theme"] == "autumn" %}selected{% endif %}>
+                            Autumn – Cozy and earthy
+                        </option>
+
+                        <option value="winter"
+                            {% if preferences["seasonal_theme"] == "winter" %}selected{% endif %}>
+                            Winter – Cool and peaceful
+                        </option>
+
+                        <option value="spring"
+                            {% if preferences["seasonal_theme"] == "spring" %}selected{% endif %}>
+                            Spring – Fresh and gentle
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="preference-divider"></div>
+
+
+                <!-- FONT STYLE -->
+                <div class="preference-group">
+
+                    <div class="preference-heading">
+                        <span class="preference-icon">Aa</span>
+
+                        <div>
+                            <label for="fontStyle">Font style</label>
+                            <p>Select the typography that feels right for you.</p>
+                        </div>
+                    </div>
+
+                    <select
+                        id="fontStyle"
+                        name="font_style"
+                        class="preference-select"
+                    >
+                        <option value="modern"
+                            {% if preferences["font_style"] == "modern" %}selected{% endif %}>
+                            Modern – Clean and simple
+                        </option>
+
+                        <option value="serif"
+                            {% if preferences["font_style"] == "serif" %}selected{% endif %}>
+                            Serif – Classic and elegant
+                        </option>
+
+                        <option value="rounded"
+                            {% if preferences["font_style"] == "rounded" %}selected{% endif %}>
+                            Rounded – Soft and friendly
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="preference-divider"></div>
+
+
+                <!-- TEXT SIZE -->
+                <div class="preference-group">
+
+                    <div class="preference-heading">
+                        <span class="preference-icon">↕</span>
+
+                        <div>
+                            <label for="textSize">Text size</label>
+                            <p>Adjust the overall text size for comfortable reading.</p>
+                        </div>
+                    </div>
+
+                    <select
+                        id="textSize"
+                        name="text_size"
+                        class="preference-select"
+                    >
+                        <option value="small"
+                            {% if preferences["text_size"] == "small" %}selected{% endif %}>
+                            Small
+                        </option>
+
+                        <option value="medium"
+                            {% if preferences["text_size"] == "medium" %}selected{% endif %}>
+                            Medium – Default
+                        </option>
+
+                        <option value="large"
+                            {% if preferences["text_size"] == "large" %}selected{% endif %}>
+                            Large
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="preference-divider"></div>
+
+
+                <!-- REDUCED ANIMATIONS -->
+                <div class="preference-group">
+
+                    <div class="preference-heading">
+                        <span class="preference-icon">✦</span>
+
+                        <div>
+                            <label for="reducedAnimations">Reduced animations</label>
+                            <p>
+                                Minimize moving effects and transitions
+                                throughout {{ app_name }}.
+                            </p>
+                        </div>
+                    </div>
+
+                    <select
+                        id="reducedAnimations"
+                        name="reduced_animations"
+                        class="preference-select"
+                    >
+                        <option value="0"
+                            {% if not preferences["reduced_animations"] %}selected{% endif %}>
+                            Off – Keep normal animations
+                        </option>
+
+                        <option value="1"
+                            {% if preferences["reduced_animations"] %}selected{% endif %}>
+                            On – Reduce animations
+                        </option>
+                    </select>
+
+                </div>
+
+
+                <div class="preference-save-note">
+                    <span>♡</span>
+
+                    <p>
+                        Your preferences are saved automatically whenever
+                        you change an option. Your choices apply across
+                        {{ app_name }} pages.
+                    </p>
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- OFFLINE USE -->
+        <section class="settings-section" id="offline">
+
+            <div class="settings-section-heading">
+
+                <div class="settings-section-icon blue-icon">
+                    ☁
+                </div>
+
+                <div>
+                    <span class="eyebrow">KEEP WRITING ANYWHERE</span>
+                    <h2>Offline use</h2>
+                    <p>Use {{ app_name }} without internet and sync later.</p>
+                </div>
+
+            </div>
+
+            <div class="settings-card" id="offlineCard">
+
+                <div class="settings-card-heading">
+                    <div>
+                        <h3>Offline copy on this device</h3>
+                        <p>
+                            Memories you write offline are saved on this device and
+                            sent to your diary when you reconnect. You can also keep
+                            a copy of your memories here so you can read them offline.
+                        </p>
+                    </div>
+
+                    <span class="settings-status" id="offlineStatusBadge">CHECKING</span>
+                </div>
+
+                <label class="switch-row" for="offlineCacheToggle">
+                    <span>
+                        <strong>Keep my memories available offline on this device</strong>
+                        <small>
+                            Stores your memories in this browser. Turn it off on a
+                            shared computer. It is cleared automatically when you log out.
+                        </small>
+                    </span>
+                    <input type="checkbox" id="offlineCacheToggle" class="switch-input">
+                </label>
+
+                <dl class="offline-facts">
+                    <div><dt>Saved copies</dt><dd id="offlineCachedCount">–</dd></div>
+                    <div><dt>Waiting to sync</dt><dd id="offlinePendingCount">–</dd></div>
+                    <div><dt>Last synced</dt><dd id="offlineLastSync">–</dd></div>
+                </dl>
+
+                <div class="settings-button-row">
+                    <button type="button" class="button-secondary" id="offlineSyncNow">Sync now</button>
+                    <button type="button" class="button-danger" id="offlineClear">Clear offline copy</button>
+                </div>
+
+                <p class="settings-inline-status" id="offlineMessage" role="status"></p>
+
+            </div>
+
+        </section>
+
+
+        <!-- VOICE UNLOCK -->
+        <section class="settings-section" id="voice">
+
+            <div class="settings-section-heading">
+
+                <div class="settings-section-icon peach-icon">
+                    🎙
+                </div>
+
+                <div>
+                    <span class="eyebrow">AN EXTRA CHECK</span>
+                    <h2>Voice unlock</h2>
+                    <p>Use your voice to open your Time Capsules.</p>
+                </div>
+
+            </div>
+
+            <div class="settings-card"
+                 id="voiceCard"
+                 data-enrolled="{{ 'true' if voice_profile else 'false' }}"
+                 data-enroll-url="{{ url_for('voice.enroll') }}"
+                 data-delete-url="{{ url_for('voice.delete') }}">
+
+                <div class="settings-card-heading">
+                    <div>
+                        <h3>Your voice passphrase</h3>
+                        <p>
+                            Say the same short phrase five times. {{ app_name }} keeps
+                            a few numbers that describe your voice, never the recording.
+                        </p>
+                    </div>
+
+                    <span class="settings-status" id="voiceStatusBadge">
+                        {{ 'ACTIVE' if voice_profile else 'OFF' }}
+                    </span>
+                </div>
+
+                <div class="voice-caution">
+                    <span aria-hidden="true">ⓘ</span>
+                    <p>
+                        This is an extra convenience check, not a replacement for your
+                        password. It can occasionally fail in a noisy room, and a
+                        recording of your voice could fool it, so your password always
+                        works as a backup.
+                    </p>
+                </div>
+
+                <div id="voiceSetup" {% if voice_profile %}hidden{% endif %}>
+
+                    <p class="voice-phrase">
+                        Say: <strong>“{{ app_name }}, every memory deserves to be remembered.”</strong>
+                    </p>
+
+                    <div class="password-field-group">
+                        <label for="voicePassword">Confirm with your password</label>
+                        <input type="password" id="voicePassword" autocomplete="current-password"
+                               maxlength="128" placeholder="Your current password">
+                    </div>
+
+                    <div class="voice-steps" id="voiceSteps" aria-label="Recording progress">
+                        <span class="voice-step" data-step="1">1</span>
+                        <span class="voice-step" data-step="2">2</span>
+                        <span class="voice-step" data-step="3">3</span>
+                        <span class="voice-step" data-step="4">4</span>
+                        <span class="voice-step" data-step="5">5</span>
+                    </div>
+
+                    <div class="voice-meter" aria-hidden="true">
+                        <div class="voice-meter-bar" id="voiceMeterBar"></div>
+                    </div>
+
+                    <div class="settings-button-row">
+                        <button type="button" class="button-secondary" id="voiceRecord">
+                            🎙 Record sample 1 of 5
+                        </button>
+                        <button type="button" class="button-primary" id="voiceSave" hidden>
+                            Turn on voice unlock
+                        </button>
+                    </div>
+                </div>
+
+                <div id="voiceManage" {% if not voice_profile %}hidden{% endif %}>
+
+                    <p class="voice-phrase">
+                        Voice unlock is on
+                        {% if voice_profile %}since {{ voice_profile['updated_at'] | pretty_date }}{% endif %}.
+                        To change your voice or turn it off, confirm your password.
+                    </p>
+
+                    <div class="password-field-group">
+                        <label for="voiceRemovePassword">Your password</label>
+                        <input type="password" id="voiceRemovePassword" autocomplete="current-password"
+                               maxlength="128" placeholder="Your current password">
+                    </div>
+
+                    <div class="settings-button-row">
+                        <button type="button" class="button-secondary" id="voiceRetrain">Record again</button>
+                        <button type="button" class="button-danger" id="voiceRemove">Turn off voice unlock</button>
+                    </div>
+                </div>
+
+                <p class="settings-inline-status" id="voiceMessage" role="status"></p>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECURITY -->
+        <section class="settings-section">
+
+            <div class="settings-section-heading">
+
+                <div class="settings-section-icon security-icon">
+                    ♧
+                </div>
+
+                <div>
+                    <span class="eyebrow">KEEP YOUR ACCOUNT SAFE</span>
+                    <h2>Security</h2>
+                    <p>Manage the security of your personal account.</p>
+                </div>
+
+            </div>
+
+            <div class="settings-card">
+
+                <div class="settings-card-heading">
+
+                    <div>
+                        <h3>Change your password</h3>
+                        <p>
+                            Use a strong password to help protect
+                            your personal memories.
+                        </p>
+                    </div>
+
+                    <span class="settings-status">PROTECTED</span>
+
+                </div>
+
+                <form
+                    method="POST"
+                    action="{{ url_for('change_password') }}"
+                    class="password-change-form"
+                    id="passwordChangeForm"
+                >
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="password-field-group">
+
+                        <label for="currentPassword">
+                            Current password
+                        </label>
+
+                        <div class="password-input-wrapper">
+
+                            <input
+                                type="password"
+                                id="currentPassword"
+                                name="current_password"
+                                placeholder="Enter your current password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-target="currentPassword"
+                                aria-label="Show current password"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="password-field-group">
+
+                        <label for="newPassword">
+                            New password
+                        </label>
+
+                        <div class="password-input-wrapper">
+
+                            <input
+                                type="password"
+                                id="newPassword"
+                                name="new_password"
+                                placeholder="Create a new password"
+                                minlength="8"
+                                maxlength="128"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-target="newPassword"
+                                aria-label="Show new password"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                        <small>
+                            Your password must contain at least 8 characters.
+                        </small>
+
+                    </div>
+
+
+                    <div class="password-field-group">
+
+                        <label for="confirmPassword">
+                            Confirm new password
+                        </label>
+
+                        <div class="password-input-wrapper">
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirm_password"
+                                placeholder="Enter your new password again"
+                                minlength="8"
+                                maxlength="128"
+                                autocomplete="new-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                data-password-target="confirmPassword"
+                                aria-label="Show password confirmation"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="password-requirements">
+                        <span>♡</span>
+
+                        <p>
+                            For your protection, {{ app_name }} will keep this
+                            device logged in after a successful password
+                            change and sign out your other active sessions.
+                        </p>
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="password-submit-button"
+                    >
+                        Change password
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+<script src="{{ url_for('static', filename='js/voice-features.js') }}"></script>
+<script src="{{ url_for('static', filename='js/voice-setup.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base_app.html" %}
+{% set active = 'assistant' %}
+
+{% block title %}Diary Assistant{% endblock %}
+{% block page_title %}Diary Assistant{% endblock %}
+{% block topbar_label %}ASK ABOUT YOUR MEMORIES{% endblock %}
+
+{% block content %}
+
+    <section class="chat-card" id="chat"
+             data-api-url="{{ url_for('assistant.ask') }}">
+
+        <div class="chat-privacy">
+            <span aria-hidden="true">🔒</span>
+            Your questions and memories stay inside {{ app_name }}. Nothing is sent to
+            an outside service.
+        </div>
+
+        <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-label="Conversation">
+
+            <div class="chat-message chat-bot">
+                <div class="chat-bubble">Hi {{ user["full_name"].split()[0] }}! 💜 I can search your memories, find related words, show what you wrote on this day in earlier years, and help you use {{ app_name }}. What would you like to do?</div>
+            </div>
+
+        </div>
+
+        <div class="chat-suggestions" id="chatSuggestions">
+            {% for suggestion in suggestions %}
+                <button type="button" class="chip" data-suggestion="{{ suggestion }}">{{ suggestion }}</button>
+            {% endfor %}
+        </div>
+
+        <form class="chat-form" id="chatForm" autocomplete="off">
+            <label for="chatInput" class="visually-hidden">Ask the assistant</label>
+
+            <input type="text"
+                   id="chatInput"
+                   maxlength="300"
+                   placeholder="Try: find birthday · what did I write last month?"
+                   required>
+
+            <button type="submit" class="button-primary" id="chatSend">Send</button>
+        </form>
+
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/assistant.js') }}"></script>
+{% endblock %}

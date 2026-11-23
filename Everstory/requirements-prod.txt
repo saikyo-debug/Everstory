@@ -1,0 +1,13 @@
+# Production extras. Install with:  pip install -r requirements-prod.txt
+# (The application itself needs only requirements.txt.)
+#
+# These pins were the current releases when this file was written. Check
+# for newer versions before deploying, and re-run the tests after upgrading.
+
+-r requirements.txt
+
+# Linux / macOS / Docker
+gunicorn==23.0.0; sys_platform != "win32"
+
+# Windows (gunicorn does not run on Windows)
+waitress==3.0.2

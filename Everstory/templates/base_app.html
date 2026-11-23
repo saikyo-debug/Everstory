@@ -1,0 +1,209 @@
+{#
+    The signed-in app shell: sidebar, top bar, mobile navigation, flash
+    messages, theme and offline support. Every signed-in page extends this,
+    so navigation and messages behave identically everywhere.
+
+    A page sets   {% set active = 'entries' %}   to highlight its menu item.
+#}
+{% from "_macros.html" import brand, csrf_field, flashes with context %}
+<!DOCTYPE html>
+<html lang="en"
+      data-theme="{{ theme.data_theme }}"
+      data-theme-mode="{{ theme.mode }}"
+      data-season="{{ theme.season }}"
+      data-font="{{ theme.font }}"
+      data-text-size="{{ theme.text_size }}"
+      data-reduced-motion="{{ theme.reduced_motion }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#958CE8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="user-id" content="{{ user['id'] }}">
+
+    <title>{% block title %}{{ app_name }}{% endblock %} | {{ app_name }}</title>
+
+    <link rel="manifest" href="{{ url_for('web_manifest') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+
+    {# Runs before the page paints so "System" mode never flashes. #}
+    <script src="{{ url_for('static', filename='js/theme-boot.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    {% block head %}{% endblock %}
+</head>
+
+<body data-theme-mode="{{ theme.mode }}">
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="connection-banner" id="connectionBanner" role="status" hidden></div>
+<div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+<div class="dashboard-layout">
+
+    <!-- DESKTOP SIDEBAR -->
+    <aside class="sidebar">
+
+        {{ brand(url_for('dashboard')) }}
+
+        <a href="{{ url_for('new_entry') }}" class="sidebar-write">
+            <span aria-hidden="true">+</span> Write a Memory
+        </a>
+
+        <div class="sidebar-label">YOUR PERSONAL SPACE</div>
+
+        <nav class="sidebar-nav" aria-label="Main">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="nav-item{% if active == 'home' %} active{% endif %}"
+               {% if active == 'home' %}aria-current="page"{% endif %}>
+                <span class="nav-icon" aria-hidden="true">⌂</span>
+                <span>Home</span>
+            </a>
+
+            <a href="{{ url_for('entries') }}"
+               class="nav-item{% if active == 'entries' %} active{% endif %}"
+               {% if active == 'entries' %}aria-current="page"{% endif %}>
+                <span class="nav-icon" aria-hidden="true">▤</span>
+                <span>My Entries</span>
+            </a>
+
+            <a href="{{ url_for('calendar_view') }}"
+               class="nav-item{% if active == 'calendar' %} active{% endif %}"
+               {% if active == 'calendar' %}aria-current="page"{% endif %}>
+                <span class="nav-icon" aria-hidden="true">▦</span>
+                <span>Calendar</span>
+            </a>
+
+            <a href="{{ url_for('assistant.page') }}"
+               class="nav-item{% if active == 'assistant' %} active{% endif %}"
+               {% if active == 'assistant' %}aria-current="page"{% endif %}>
+                <span class="nav-icon" aria-hidden="true">✧</span>
+                <span>Assistant</span>
+            </a>
+
+            <a href="{{ url_for('capsules.index') }}"
+               class="nav-item{% if active == 'capsules' %} active{% endif %}"
+               {% if active == 'capsules' %}aria-current="page"{% endif %}>
+                <span class="nav-icon" aria-hidden="true">⧗</span>
+                <span>Time Capsules</span>
+            </a>
+
+            <a href="{{ url_for('settings_view') }}"
+               class="nav-item{% if active == 'settings' %} active{% endif %}"
+               {% if active == 'settings' %}aria-current="page"{% endif %}>
+                <span class="nav-icon" aria-hidden="true">⚙</span>
+                <span>Settings</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <div class="sidebar-user">
+
+                <div class="user-avatar">{{ user["full_name"][0] | upper }}</div>
+
+                <div class="user-details">
+                    <strong>{{ user["full_name"] }}</strong>
+                    <span>Your personal diary</span>
+                </div>
+
+            </div>
+
+            <!-- CSRF-PROTECTED LOGOUT -->
+            <form method="POST" action="{{ url_for('logout') }}" data-logout-form>
+                {{ csrf_field() }}
+
+                <button type="submit" class="logout-link">
+                    <span aria-hidden="true">↪</span> Log out
+                </button>
+            </form>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="main">
+
+        <header class="topbar">
+
+            <div>
+                <span class="topbar-label">{% block topbar_label %}YOUR PERSONAL DIARY{% endblock %}</span>
+                <h2>{% block page_title %}{{ app_name }}{% endblock %}</h2>
+            </div>
+
+            <div class="topbar-right">
+                {% block topbar_actions %}{% endblock %}
+
+                <div class="topbar-profile">
+                    <div class="user-avatar">{{ user["full_name"][0] | upper }}</div>
+                    <span>{{ user["full_name"] }}</span>
+                </div>
+            </div>
+
+        </header>
+
+        {{ flashes() }}
+
+        {% block content %}{% endblock %}
+
+        <footer class="dashboard-footer">
+            <span>Made with ♡ for your memories.</span>
+            <span>© 2026 {{ app_name }}</span>
+        </footer>
+
+    </main>
+
+</div>
+
+<!-- MOBILE BOTTOM NAVIGATION -->
+<nav class="mobile-nav" aria-label="Main (mobile)">
+
+    <a href="{{ url_for('dashboard') }}" class="mobile-nav-item{% if active == 'home' %} active{% endif %}">
+        <span aria-hidden="true">⌂</span><small>Home</small>
+    </a>
+
+    <a href="{{ url_for('entries') }}" class="mobile-nav-item{% if active == 'entries' %} active{% endif %}">
+        <span aria-hidden="true">▤</span><small>Entries</small>
+    </a>
+
+    <a href="{{ url_for('new_entry') }}" class="mobile-nav-item mobile-nav-write" aria-label="Write a memory">
+        <span aria-hidden="true">+</span><small>Write</small>
+    </a>
+
+    <a href="{{ url_for('calendar_view') }}" class="mobile-nav-item{% if active == 'calendar' %} active{% endif %}">
+        <span aria-hidden="true">▦</span><small>Calendar</small>
+    </a>
+
+    <details class="mobile-more" id="mobileMore">
+        <summary class="mobile-nav-item{% if active in ('assistant', 'capsules', 'settings') %} active{% endif %}">
+            <span aria-hidden="true">⋯</span><small>More</small>
+        </summary>
+
+        <div class="mobile-more-menu">
+            <a href="{{ url_for('assistant.page') }}"><span aria-hidden="true">✧</span> Assistant</a>
+            <a href="{{ url_for('capsules.index') }}"><span aria-hidden="true">⧗</span> Time Capsules</a>
+            <a href="{{ url_for('settings_view') }}"><span aria-hidden="true">⚙</span> Settings</a>
+
+            <form method="POST" action="{{ url_for('logout') }}" data-logout-form>
+                {{ csrf_field() }}
+                <button type="submit"><span aria-hidden="true">↪</span> Log out</button>
+            </form>
+        </div>
+    </details>
+
+</nav>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script src="{{ url_for('static', filename='js/offline-store.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

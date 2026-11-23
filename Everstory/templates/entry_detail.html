@@ -1,0 +1,54 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import favorite_button, media_gallery, csrf_field with context %}
+{% set active = 'entries' %}
+
+{% block title %}{{ entry["title"] }}{% endblock %}
+{% block page_title %}A memory{% endblock %}
+{% block topbar_label %}YOUR PERSONAL COLLECTION{% endblock %}
+
+{% block content %}
+
+    <a href="{{ url_for('entries') }}" class="back-link">← Back to My Entries</a>
+
+    <article class="entry-detail">
+
+        <header class="entry-detail-head">
+
+            <div>
+                <h1>{{ entry["title"] }}</h1>
+
+                <p class="entry-meta">
+                    <span class="entry-date">{{ entry["created_at"] | pretty_datetime }}</span>
+
+                    {% if entry["updated_at"] != entry["created_at"] %}
+                        <span class="entry-edited">Edited {{ entry["updated_at"] | pretty_datetime }}</span>
+                    {% endif %}
+                </p>
+            </div>
+
+            {{ favorite_button(entry, url_for('view_entry', entry_id=entry['id'])) }}
+
+        </header>
+
+        <div class="entry-body">{{ entry["content"] }}</div>
+
+        {{ media_gallery(media) }}
+
+        <footer class="entry-actions">
+
+            <a href="{{ url_for('edit_entry', entry_id=entry['id']) }}" class="button-secondary">
+                ✎ Edit
+            </a>
+
+            <form method="POST"
+                  action="{{ url_for('remove_entry', entry_id=entry['id']) }}"
+                  data-confirm="Delete this memory{% if media %} and its attachments{% endif %}? This cannot be undone.">
+                {{ csrf_field() }}
+                <button type="submit" class="button-danger">Delete</button>
+            </form>
+
+        </footer>
+
+    </article>
+
+{% endblock %}

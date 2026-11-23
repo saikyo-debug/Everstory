@@ -1,0 +1,97 @@
+{#
+    Shown by the service worker when the network is unavailable. It holds
+    NO private data: the memories are filled in by JavaScript from the copy
+    kept on this device.
+#}
+{% from "_macros.html" import brand with context %}
+<!DOCTYPE html>
+<html lang="en"
+      data-theme="light"
+      data-theme-mode="system"
+      data-theme-source="local"
+      data-season="classic"
+      data-font="modern"
+      data-text-size="medium"
+      data-reduced-motion="false">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#958CE8">
+
+    <title>Offline | {{ app_name }}</title>
+
+    <link rel="manifest" href="{{ url_for('web_manifest') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+
+    <script src="{{ url_for('static', filename='js/theme-boot.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+
+<body>
+
+<div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+<main class="offline-shell"
+      id="offlineApp"
+      data-dashboard-url="{{ url_for('dashboard') }}"
+      data-login-url="{{ url_for('login') }}">
+
+    <header class="offline-top">
+        {{ brand(url_for('dashboard')) }}
+        <button type="button" class="button-secondary" id="offlineRetry">Try again</button>
+    </header>
+
+    <div class="offline-hero" id="offlineHero" role="status">
+        <strong id="offlineHeroTitle">You're offline</strong>
+        <span id="offlineHeroText">
+            You can still write memories. They are saved on this device and
+            added to your diary when you reconnect.
+        </span>
+    </div>
+
+    <section class="offline-section">
+        <h2>Write a memory</h2>
+
+        <form class="form-card entry-form" id="offlineForm">
+            <label for="offTitle">Entry title</label>
+            <input type="text" id="offTitle" maxlength="150"
+                   placeholder="Give this memory a title..." required>
+
+            <label for="offContent">Your memory</label>
+            <textarea id="offContent" rows="6" maxlength="50000"
+                      placeholder="Dear diary..." required></textarea>
+
+            <div class="form-actions">
+                <button type="submit" class="button-primary button-wide">
+                    Save on this device <span aria-hidden="true">♡</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="offline-section" id="pendingSection" hidden>
+        <h2>Waiting to sync <span class="pending-badge" id="pendingCount"></span></h2>
+        <div class="entries-list" id="pendingList"></div>
+        <div class="offline-actions">
+            <a class="button-primary" id="syncLink" href="{{ url_for('dashboard') }}" hidden>
+                Open my diary to sync
+            </a>
+        </div>
+    </section>
+
+    <section class="offline-section" id="cacheSection">
+        <h2>Your memories on this device</h2>
+        <p class="page-intro" id="cacheNote"></p>
+        <div class="entries-list" id="cacheList"></div>
+    </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='js/offline-store.js') }}"></script>
+<script src="{{ url_for('static', filename='js/offline-page.js') }}"></script>
+
+</body>
+</html>

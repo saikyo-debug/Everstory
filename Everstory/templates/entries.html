@@ -1,0 +1,163 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import media_badges, favorite_button with context %}
+{% set active = 'entries' %}
+
+{% block title %}My Memories{% endblock %}
+{% block page_title %}My Memories 💜{% endblock %}
+{% block topbar_label %}YOUR PERSONAL COLLECTION{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{{ url_for('new_entry') }}" class="button-primary topbar-action">
+        <span aria-hidden="true">+</span> Write a Memory
+    </a>
+{% endblock %}
+
+{% block content %}
+
+    <p class="page-intro">
+        Every little moment has a place here, {{ user["full_name"].split()[0] }}.
+    </p>
+
+    {% if has_any_entries %}
+
+        <!-- SEARCH AND FILTER -->
+        <form method="GET" action="{{ url_for('entries') }}" class="search-bar" role="search">
+
+            <label for="entrySearch" class="visually-hidden">Search your memories</label>
+
+            <input type="search"
+                   id="entrySearch"
+                   name="q"
+                   value="{{ query }}"
+                   maxlength="100"
+                   placeholder="Search your memories…"
+                   autocomplete="off">
+
+            {% if favorites_only %}
+                <input type="hidden" name="filter" value="favorites">
+            {% endif %}
+
+            <button type="submit" class="button-primary">Search</button>
+        </form>
+
+        <div class="filter-chips" role="group" aria-label="Filter memories">
+            <a href="{{ url_for('entries', q=query or None) }}"
+               class="chip{% if not favorites_only %} chip-active{% endif %}">All</a>
+            <a href="{{ url_for('entries', q=query or None, filter='favorites') }}"
+               class="chip{% if favorites_only %} chip-active{% endif %}">♥ Favorites</a>
+        </div>
+
+        {% if query or favorites_only %}
+            <p class="results-meta">
+                {{ total }} {{ 'memory' if total == 1 else 'memories' }}
+                {% if query %}matching “{{ query }}”{% endif %}
+                {% if favorites_only %}{{ 'in your favorites' }}{% endif %}
+                <a href="{{ url_for('entries') }}" class="clear-link">Clear</a>
+            </p>
+        {% endif %}
+
+    {% endif %}
+
+    <!-- SAVED MEMORIES -->
+    {% if entries %}
+
+        <div class="entries-list">
+
+            {% for entry in entries %}
+
+                <article class="entry-card">
+
+                    <div class="entry-card-head">
+                        <h3>
+                            <a href="{{ url_for('view_entry', entry_id=entry['id']) }}">{{ entry["title"] }}</a>
+                        </h3>
+
+                        {{ favorite_button(entry, request.full_path.rstrip('?')) }}
+                    </div>
+
+                    <span class="entry-date">
+                        {{ entry["created_at"] | pretty_datetime }}
+                    </span>
+
+                    {{ media_badges(media_summary.get(entry['id'])) }}
+
+                    <p class="entry-content">{{ entry["content"] | excerpt(400) }}</p>
+
+                    {% if entry["content"] | is_long(400) %}
+                        <a class="read-more" href="{{ url_for('view_entry', entry_id=entry['id']) }}">Read more →</a>
+                    {% endif %}
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+        {% if total_pages > 1 %}
+            <nav class="pagination" aria-label="Pages">
+
+                {% if page > 1 %}
+                    <a href="{{ url_for('entries', q=query or None, filter='favorites' if favorites_only else None, page=page - 1) }}"
+                       class="page-link">← Newer</a>
+                {% else %}
+                    <span class="page-link page-link-disabled">← Newer</span>
+                {% endif %}
+
+                <span class="page-status">Page {{ page }} of {{ total_pages }}</span>
+
+                {% if page < total_pages %}
+                    <a href="{{ url_for('entries', q=query or None, filter='favorites' if favorites_only else None, page=page + 1) }}"
+                       class="page-link">Older →</a>
+                {% else %}
+                    <span class="page-link page-link-disabled">Older →</span>
+                {% endif %}
+
+            </nav>
+        {% endif %}
+
+    {% elif query or favorites_only %}
+
+        <section class="empty-state">
+
+            <div class="empty-icon">☁</div>
+
+            <h3>No memories found.</h3>
+
+            <p>
+                {% if favorites_only and not query %}
+                    You haven't marked any favorites yet. Tap the heart on a
+                    memory to keep it here.
+                {% else %}
+                    Nothing matched your search. Try a different word, or ask the
+                    assistant to look for related words.
+                {% endif %}
+            </p>
+
+            <a class="primary-link" href="{{ url_for('assistant.page') }}">Ask the assistant</a>
+
+        </section>
+
+    {% else %}
+
+        <!-- EMPTY STATE -->
+        <section class="empty-state">
+
+            <div class="empty-icon">♡</div>
+
+            <h3>Your memory collection is waiting.</h3>
+
+            <p>
+                You haven't written any diary entries yet.
+                Start with a thought, a feeling, or a moment
+                you never want to forget.
+            </p>
+
+            <a class="primary-link" href="{{ url_for('new_entry') }}">
+                Write Your First Memory
+            </a>
+
+        </section>
+
+    {% endif %}
+
+{% endblock %}

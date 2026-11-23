@@ -1,0 +1,21 @@
+# Start everything:   docker compose up -d --build
+# See the logs:       docker compose logs -f
+#
+# Put your settings in ".env" (copy .env.example). Production mode needs
+# HTTPS in front of the app (see DEPLOYMENT.md). To try it on your own
+# computer over plain http://, set EVERSTORY_ENV=development in .env.
+
+services:
+  everstory:
+    build: .
+    env_file: .env
+    environment:
+      EVERSTORY_DATA_DIR: /data
+    volumes:
+      - everstory-data:/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+volumes:
+  everstory-data:

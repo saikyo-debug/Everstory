@@ -1,0 +1,71 @@
+{% extends "base_app.html" %}
+{% from "_macros.html" import media_gallery, csrf_field with context %}
+{% set active = 'capsules' %}
+
+{% block title %}{{ capsule.title }}{% endblock %}
+{% block page_title %}Time Capsule{% endblock %}
+{% block topbar_label %}A MESSAGE FROM YOUR PAST SELF{% endblock %}
+
+{% block content %}
+
+    <a href="{{ url_for('capsules.index') }}" class="back-link">← Back to Time Capsules</a>
+
+    {% if capsule.state == 'sealed' %}
+
+        <section class="capsule-sealed">
+
+            <div class="capsule-lock" aria-hidden="true">🔒</div>
+
+            <span class="eyebrow">STILL SEALED</span>
+            <h1>{{ capsule.title }}</h1>
+
+            <p class="capsule-countdown">{{ capsule.countdown }}</p>
+
+            <p class="capsule-sealed-note">
+                This capsule opens on <strong>{{ capsule.unlock_label }}</strong>.
+                Its message and attachments stay locked until then, even from you.
+                Sealed on {{ capsule.created_at | pretty_date }}.
+            </p>
+
+            <form method="POST"
+                  action="{{ url_for('capsules.delete', capsule_id=capsule.id) }}"
+                  data-confirm="Delete this sealed capsule? Its message will be lost forever.">
+                {{ csrf_field() }}
+                <button type="submit" class="button-danger">Delete capsule</button>
+            </form>
+
+        </section>
+
+    {% else %}
+
+        <article class="entry-detail capsule-open">
+
+            <header class="entry-detail-head">
+                <div>
+                    <span class="eyebrow">OPENED · WRITTEN {{ capsule.created_at | pretty_date | upper }}</span>
+                    <h1>{{ capsule.title }}</h1>
+                    <p class="entry-meta">
+                        <span class="entry-date">Sealed {{ capsule.created_at | pretty_date }}</span>
+                        <span class="entry-edited">Unlocked {{ capsule.unlock_at | pretty_date }}</span>
+                    </p>
+                </div>
+            </header>
+
+            <div class="entry-body">{{ content }}</div>
+
+            {{ media_gallery(media) }}
+
+            <footer class="entry-actions">
+                <form method="POST"
+                      action="{{ url_for('capsules.delete', capsule_id=capsule.id) }}"
+                      data-confirm="Delete this capsule and its attachments? This cannot be undone.">
+                    {{ csrf_field() }}
+                    <button type="submit" class="button-danger">Delete</button>
+                </form>
+            </footer>
+
+        </article>
+
+    {% endif %}
+
+{% endblock %}
